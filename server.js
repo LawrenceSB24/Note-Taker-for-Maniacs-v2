@@ -36,7 +36,8 @@ app.get('/api/notes', (req, res) => {
 
 // POST to handle posting new notes
 app.post('/api/notes', (req, res) => {
-    fs.readFileSync(path.join(__dirname, './db/db.json'), "utf8");
+    const notes = fs.readFileSync(path.join(__dirname, './db/db.json'), "utf8");
+    const parsedNote = JSON.parse(notes);
     const {title, text} = req.body;
     if (req.body) {
         const newNote = {
@@ -44,7 +45,7 @@ app.post('/api/notes', (req, res) => {
             text,
             id: uuidv4(),
         };
-        const parsedNote = JSON.parse(newNote);
+        parsedNote.push(newNote)
         fs.writeFileSync(path.join(__dirname, "./db/db.json"), JSON.stringify(parsedNote), "utf8")
         res.json("Note has been created");
     };
