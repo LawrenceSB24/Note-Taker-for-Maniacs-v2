@@ -1,7 +1,8 @@
 const express = require('express');
-const path = require('path');
 const fs = require('fs');
+const path = require('path');
 const {v4 : uuidv4} = require('uuid');
+
 
 const {clog} = require('./middleware/clog');
 
@@ -35,14 +36,20 @@ app.get('/api/notes', (req, res) => {
 
 // POST to handle posting new notes
 app.post('/api/notes', (req, res) => {
-    const newNote = fs.readFileSync(path.join(__dirname, './db/db.json'), "utf8");
-    const parsedNote = JSON.parse(newNote);
-    req.body.id = uuidv4();
-    parsedNote.push(req.body);
+    fs.readFileSync(path.join(__dirname, './db/db.json'), "utf8");
+    const {title, text} = req.body;
+    if (req.body) {
+        const newNote = {
+            title,
+            text,
+            id: uuidv4(),
+        };
+        const parsedNote = JSON.parse(newNote);
+        fs.writeFileSync(path.join(__dirname, "./db/db.json"), JSON.stringify(parsedNote), "utf8")
+        res.json("Note has been created");
+    };
 
-    fs.writeFileSync(path.join(__dirname, "./db/db.json"), JSON.stringify(parsedNote), "utf8");
-    res.json("Note has been created");
-})
+});
 
 app.listen(PORT, () => {
     console.log(`App listening at http://localhost:${PORT} 🚀`);
